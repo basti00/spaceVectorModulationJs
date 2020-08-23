@@ -1,4 +1,4 @@
-# SpaceVectorModulationVisual
+# SpaceVectorModulationJs
 An interactive animation to show the Space Vector Modulation (SVM). SVM is an
 switching algorithm used to generate the three-phase current required to 
 smoothly drive a three-phase electric motor.
