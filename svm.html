@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+<head>
+    <title>SVM Demo</title>
+    <script src="resources/js/svm.js"></script>
+    <link rel="stylesheet" href="resources/css/svm.css" />
+
+</head>
+<body onload="draw();">
+<div class="wrapper">
+    <canvas id="canvas"></canvas>
+    <div class="slider">
+        <span class="slider-label">Magnitude</span>
+        <input id="in_m" class="slider-input" type="range" min="0" max="100" value="85" />
+        <span id="slideroutput" class="slider-value">100</span>
+    </div>
+    <div class="slider">
+        <span class="slider-label">Rev/min</span>
+        <input id="in_a" class="slider-input" type="range" min="0" max="100" value="30" />
+        <span id="slideroutputb" class="slider-value">100</span>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+ html, body {
+     overflow: hidden;
+     margin: 0 !important;
+     padding: 0 !important;
+ }
+
+canvas{
+    /* to center canvas */
+    padding: 0;
+    margin: auto;
+    display: block;
+
+    height: 85vh;
+}
+
+.wrapper{
+    width: 100vw;
+    height: 100vh;
+}
+
+.slider {
+    height: 30px;
+    display:flex;/* Use flexbox for slider wrapper element */
+    flex-direction:row;/* Direct alignment of content along horizontal axis */
+    align-items:center;/* Tell's flexbox to center content around the non-horizontal axis (ie around the vertical axis) */
+}
+.slider-label {
+    margin-left: 10px;
+    alignment: right;
+    width: 100px;
+}
+.slider-input {
+    flex:1; /* Causes the input element to horizontally stretch to fill in available horizontal space */
+}
+.slider-value {
+    margin: 2vw;
+    width: 10vw;
+}
+
+span {
+    text-align: right;
+    font-size: 2.5vh;
+    font-family: "Lucida Console", Courier, monospace;
+}
