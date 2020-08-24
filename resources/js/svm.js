@@ -1,3 +1,17 @@
+var labeling = parseInt(findGetParameter("label")); //0.. phase labeling, 1 state labeling
+var with_pwm = parseInt(findGetParameter("pwm")); // if 1 draw pwm signal
+
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    var items = location.search.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    }
+    return result;
+}
+
 const getTime = typeof performance === 'function' ? performance.now : Date.now;
 
 function init() {
@@ -26,6 +40,68 @@ function drawAddedVect(ctx, mag1, mag2, phase1, phase2, color1, color2) {
     ctx.lineTo(mag2, 0);
     ctx.strokeStyle = color2;
     ctx.stroke();
+    ctx.restore();
+}
+
+function drawStateLabeling(ctx, radius, i){
+    ctx.save(); //text
+    ctx.translate(radius+75, 0);
+    ctx.rotate((i+1)*Math.PI/3);
+    if(i == 5){
+        ctx.fillStyle = 'rgba(150, 0, 0, 0.4)';
+        ctx.fillText("v1 (001)", 0, 10);
+    }
+    if(i == 0){
+        ctx.fillStyle = 'rgba(0, 0, 150, 0.4)';
+        ctx.fillText("v3 (011)", 0, 10);
+    }
+    if(i == 1){
+        ctx.fillStyle = 'rgba(0, 150, 0, 0.4)';
+        ctx.fillText("v2 (010)", 0, 10);
+    }
+    if(i == 2){
+        ctx.fillStyle = 'rgba(150, 0, 0, 0.4)';
+        ctx.fillText("v6 (110)", 0, 10);
+    }
+    if(i == 3){
+        ctx.fillStyle = 'rgba(0, 0, 150, 0.4)';
+        ctx.fillText("v4 (100)", 0, 10);
+    }
+    if(i == 4){
+        ctx.fillStyle = 'rgba(0, 150, 0, 0.4)';
+        ctx.fillText("v5 (101)", 0, 10);
+    }
+    ctx.restore();
+}
+
+function drawPhaseLabeling(ctx, radius, i){
+    ctx.save(); //text
+    ctx.translate(radius+55, 0);
+    ctx.rotate((i+1)*Math.PI/3);
+    if(i == 5){
+        ctx.fillStyle = 'rgba(150, 0, 0, 0.4)';
+        ctx.fillText("A", 0, 10);
+    }
+    if(i == 0){
+        ctx.fillStyle = 'rgba(0, 0, 150, 0.4)';
+        ctx.fillText("-C", 0, 10);
+    }
+    if(i == 1){
+        ctx.fillStyle = 'rgba(0, 150, 0, 0.4)';
+        ctx.fillText("B", 0, 10);
+    }
+    if(i == 2){
+        ctx.fillStyle = 'rgba(150, 0, 0, 0.4)';
+        ctx.fillText("-A", 0, 10);
+    }
+    if(i == 3){
+        ctx.fillStyle = 'rgba(0, 0, 150, 0.4)';
+        ctx.fillText("C", 0, 10);
+    }
+    if(i == 4){
+        ctx.fillStyle = 'rgba(0, 150, 0, 0.4)';
+        ctx.fillText("-B", 0, 10);
+    }
     ctx.restore();
 }
 
@@ -134,8 +210,10 @@ function draw(timestamp) {
     var ctx = document.getElementById('canvas').getContext('2d');
     var canvas = document.getElementById('canvas');
     var dpr = window.devicePixelRatio;
+
     canvas.width = window.innerWidth*2*dpr/1.5;
     canvas.height = window.innerHeight*2*dpr/1.5;
+
 
     if(canvas.height<canvas.width){
         var radius = canvas.height * 0.4;
@@ -160,6 +238,7 @@ function draw(timestamp) {
         draw.t = 0;
     }
     draw.t = draw.t + 0.001*delta*(2*Math.PI)*(0.000+(in_a.value/100)**2);
+    //var alpha = 1/6 * Math.PI;
     var alpha = (draw.t % (2*Math.PI)); //-((2 * Math.PI) / 60) * time.getSeconds() - ((2 * Math.PI) / 60000) * time.getMilliseconds();
     var phi = (alpha) % (Math.PI/3);
     var m = in_m.value / 100;// / Math.cos(Math.PI/6);
@@ -179,41 +258,29 @@ function draw(timestamp) {
     for(var i=0; i<6; i++){ //hexagon
         ctx.rotate(-Math.PI/3);
         ctx.lineTo(radius, 0);
-        ctx.font = "8vh Arial";
-        ctx.save(); //text
-        ctx.translate(radius+40, 0);
-        ctx.rotate((i+1)*Math.PI/3);
-        if(i == 1){
-            ctx.fillStyle = 'rgba(0, 150, 0, 0.4)';
-            ctx.fillText("B", 0, 10);
-        }
-        if(i == 3){
-            ctx.fillStyle = 'rgba(0, 0, 150, 0.4)';
-            ctx.fillText("C", 0, 10);
-        }
-        if(i == 5){
-            ctx.fillStyle = 'rgba(150, 0, 0, 0.4)';
-            ctx.fillText("A", 0, 10);
-        }
-        ctx.restore();
+        ctx.font = "6vh Arial";
+
+        if(labeling == 0)
+            drawPhaseLabeling(ctx, radius, i);
+        else
+            drawStateLabeling(ctx, radius, i);
     }
+
     ctx.stroke();
     ctx.restore();
 
+    if(labeling == 1){
+        ctx.save();
+        ctx.font = "6vh Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = 'rgba(20, 20, 20, 0.5)';
+        ctx.fillText("v0 (000)", 0, -30);
+        ctx.fillText("v7 (111)", 0, 50);
+        ctx.restore();
+    }
+
     //title
     ctx.save();
-    ctx.font = "9vh Arial";
-    ctx.lineWidth = 3;
-    ctx.moveTo(0, 0);
-    ctx.textAlign = "center";
-    ctx.fillText("asdasdasd Vector Modulation", 0, -radius*1.05);
-    ctx.font = "7vh Arial";
-    ctx.translate(0, radius*1.1);
-    ctx.fillText("phase: " + Math.floor(alpha*180/Math.PI), 0, 0);
-    ctx.translate(-radius*2/3, 0);
-    ctx.fillText("magnitude: " + Math.round(m * 100) / 100, 0, 0);
-    ctx.translate(2*radius*2/3, 0);
-    ctx.fillText("sector: " + sector, 0, 0);
     ctx.restore();
 
     // alpha pointer
@@ -225,11 +292,13 @@ function draw(timestamp) {
     ctx.moveTo(0, 0);
     ctx.lineTo(m*radius_m, 0);
     ctx.stroke();
+
+    ctx.arc(m*radius_m,0,5,0,2*Math.PI);
+    ctx.fill();
     ctx.restore();
 
     var vect1 = sector * Math.PI/3;
     var vect2 = vect1 + Math.PI/3;
-
     //vektor x
     ctx.save();
     ctx.strokeStyle = 'rgba(255, 45, 0, 0.1)';
@@ -298,7 +367,8 @@ function draw(timestamp) {
     ctx.arc(0, 0, radius_m*m, 0, Math.PI * 2, false);
     ctx.stroke();
 
-    drawPWM(ctx, radius, alpha, m);
+    if(with_pwm != 0)
+        drawPWM(ctx, radius, alpha, m);
 
     window.requestAnimationFrame(draw);
 }
